@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/text_to_image.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/image_to_image.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+   
+    {% block extra_css  %} {% endblock  %}
+</head>
+<body>
+{% block content %}
+
+{% endblock content  %}
+<!-- <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" type="application/javascript" ></script> -->
+<script src="{{ url_for('static', filename='js/popper.min.js') }}" type="application/javascript"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" type="application/javascript" ></script>
+<script src="{{ url_for('static', filename='js/text_to_image.js') }}" type="application/javascript" ></script>
+<script src="{{ url_for('static', filename='js/image_to_image.js') }}" type="application/javascript" ></script>
+<script src="{{ url_for('static', filename='js/video_to_video.js') }}" type="application/javascript" ></script>
+{% block extra_js %}{% endblock %}
+
+
+</body>
+</html>

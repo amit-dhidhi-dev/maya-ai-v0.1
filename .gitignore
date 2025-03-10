@@ -1,0 +1,9 @@
+/.idea
+/.venv
+/instance
+/cache
+maya/models/control_v11p_sd15_normalbae.pth
+maya/models/control_v11p_sd15_openpose.pth
+maya/models/*.safetensors
+maya/video_to_video/__pycache__/*.pyc
+__pycache__/

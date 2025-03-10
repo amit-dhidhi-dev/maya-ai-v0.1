@@ -1,0 +1,161 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<!-- navbar start -->
+{% include 'navbar.html' %}
+<!-- navbar ended -->
+
+<!--messages-->
+<div class="container">
+    {% include '_messages.html' %}
+</div>
+
+<!-- type of services -->
+<div class="container p-5 ">
+    <div class="row p-5 g-5 ">
+        <div class="col-md-4  ">
+            <a href="{{url_for('textToImage')}}" class=" p-3 card shadow text-center text-dark text-decoration-none ">
+                <h5>Text to Image</h5>
+            </a>
+
+        </div>
+        <div class="col-md-4 ">
+           <a href="{{url_for('imageToImage')}}" class=" p-3 card shadow text-center text-dark text-decoration-none ">
+                <h5>Image to Image</h5>
+           </a>
+
+        </div>
+        <div class="col-md-4   ">
+           <a href="{{url_for('videoToVideo')}}" class=" p-3 card shadow text-center text-dark text-decoration-none ">
+                <h5>Video to Video</h5>
+           </a>
+
+        </div>
+    </div>
+</div>
+
+<!-- example of services -->
+<div class="container">
+    <div class="row align-items-center  p-5  bg-primary ">
+        <!-- Text Column -->
+        <div class="col-md-6">
+            <h2>Text to Image</h2>
+            <p>"A stunning young woman exudes charm as she smiles softly, wearing a stylish cap tilted slightly
+                to one side. Her radiant complexion glows under the soft sunlight, highlighting her sparkling
+                eyes and graceful features. She’s dressed in a casual yet chic outfit, perfectly complementing
+                her vibrant personality. The cap adds a playful touch, framing her flowing hair. Her presence is
+                captivating, blending elegance and a carefree spirit in perfect harmony." </p>
+
+        </div>
+
+        <!-- Image Column -->
+        <div class="col-md-6 text-center">
+            <img src="{{url_for('static', filename='photos/'+ 'sd.jpg'  )}}" alt="Descriptive Alt Text"
+                class="img-fluid rounded">
+        </div>
+    </div>
+</div>
+
+<div class="container ">
+    <div class="row align-items-center  p-5 mt-2  bg-success ">
+        <h2>Image to Image</h2>
+        <!-- Image Column -->
+        <div class="col-md-6 text-center">
+
+            <img src="{{url_for('static', filename='photos/'+ 'sd.jpg'  )}}" alt="Descriptive Alt Text"
+                class="img-fluid rounded">
+            <h4>Original</h4>
+        </div>
+
+        <!-- Image Column -->
+        <div class="col-md-6 text-center">
+            <img src="{{url_for('static', filename='photos/'+ 'sd.jpg'  )}}" alt="Descriptive Alt Text"
+                class="img-fluid rounded">
+            <h4>Generated</h4>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container ">
+    <div class="row align-items-center  p-5 mt-2 bg-info  ">
+        <h2>Video to Video</h2>
+        <!-- Text Column -->
+        <div class="col-md-6 text-center">
+            <video autoplay muted loop class="w-100 rounded" style="height: 70vh;">
+                <source src="{{url_for('static', filename='videos/'+ 'short_video.mp4'  )}}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <h4>Original</h4>
+        </div>
+
+        <!-- Image Column -->
+        <div class="col-md-6 text-center">
+            <video autoplay muted loop class="w-100 rounded" style="height: 70vh;">
+                <source src="{{url_for('static', filename='videos/'+ 'short_video.mp4'  )}}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <h4>Generated</h4>
+        </div>
+    </div>
+</div>
+
+
+<!-- footer -->
+
+
+
+<div class="container bg-dark text-white pt-4 ">
+    <footer>
+        <div class="row">
+            <!-- About Section -->
+            <div class="col-md-4">
+                <h5>About Us</h5>
+                <p>
+                    We are dedicated to providing the best services to our customers. Our focus is on quality and
+                    innovation to meet your needs.
+                </p>
+            </div>
+
+            <!-- Links Section -->
+            <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white text-decoration-none">Home</a></li>
+                    <li><a href="#" class="text-white text-decoration-none">About</a></li>
+                    <li><a href="#" class="text-white text-decoration-none">Services</a></li>
+                    <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <p>
+                    <i class="bi bi-geo-alt-fill"></i> Raipur, Chhattisgarh, India
+                </p>
+                <p>
+                    <i class="bi bi-telephone-fill"></i> +91 62604-63111
+                </p>
+                <p>
+                    <i class="bi bi-envelope-fill"></i> hotmayaai@gmail.com
+                </p>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <p class="mb-0">&copy; 2025 {{app_name}}. All rights reserved.</p>
+        </div>
+    </footer>
+</div>
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}

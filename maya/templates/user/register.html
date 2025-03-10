@@ -1,0 +1,38 @@
+{% extends 'layout.html'  %}
+
+{% block content  %}
+
+{% from "_formhelpers.html" import render_field  %}
+
+<div class="container">
+
+    {% include "_messages.html"  %}
+
+    <form action="/register" method="POST"  >
+        {{ form.hidden_tag()}}
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 card p-3 mt-5 shadow">
+                  <h1 class="bg-info text-center p-2">Register</h1>
+                {{render_field(form.name, class="form-control")  }}
+                {{render_field(form.email, class="form-control"  )  }}
+                {{render_field(form.password , class="form-control"  )  }}
+                {{render_field(form.confirm , class="form-control"  )  }}
+
+                     <button type="submit" class="btn btn-outline-primary"  >Register</button>
+
+                 <div class="text-center mt-2">
+                     <a href="{{ url_for('login') }}">Already have a account? - login</a>
+                </div>
+            </div>
+
+            <div class="col-md-3"></div>
+        </div>
+    </form>
+
+</div>
+
+
+
+
+{% endblock content  %}

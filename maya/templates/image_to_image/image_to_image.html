@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+
+
+{% block extra_css %}
+{% if no_animation %}
+<style>
+    .image-placeholder::before {
+        display: none;
+    }
+
+    .spinner-border {
+        display: none;
+    }
+
+    #displayImage {
+        display: block;
+    }
+</style>
+{% endif %}
+{% endblock %}
+
+
+
+{% block content %}
+
+{% include 'navbar.html' %}
+
+<div class="container my-5">
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="form-container">
+                <h2 class="mb-4">Image to Image </h2>
+                <form id="" action="/imagetoimage" method="POST" enctype="multipart/form-data">
+
+                    <!-- Image Size Selection -->
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Image</label>
+                        <div class="image-input">
+                            <input type="file" id="imageInput" name="imageInput" class="form-control mb-2"
+                                accept="image/*">
+                        </div>
+                        {% if no_animation %}
+                        <div id="imagePreview" class="image-preview">
+                            <img src="{{input_image_path}}">
+                        </div>
+                        {% else %}
+                        <div id="imagePreview" class="image-preview">
+                            <p>No Image Selected</p>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <!-- Text Area -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="description" rows="5"
+                            placeholder="Describe your image..."
+                            required>{% if no_animation %}{{prompt}}{% endif %}</textarea>
+                    </div>
+
+
+
+
+                    <!-- Dropdown Example -->
+                    <div class="mb-3">
+                        <label for="model_type" class="form-label">Image Style</label>
+                        <select class="form-control" id="model_type" name="model_type">
+                            {% if no_animation %}
+                            {% if model_type == "option1" %}
+                            <option value="option1" selected>Anime</option>
+                            <option value="option2">Realistic</option>
+                            {% else %}
+                            <option value="option1">Anime</option>
+                            <option value="option2" selected>Realistic</option>
+                            {% endif %}
+                            {% else %}
+                            <option value="option1">Anime</option>
+                            <option value="option2">Realistic</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="generateBtnImageToImage" class="btn btn-primary mt-3" disabled>Generate
+                        Image</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="image-placeholder ">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                {% if image_url %}
+                <img id="displayImage" src="{{image_url[0]}}" alt="Generated Image">
+                {% endif %}
+            </div>
+            <!-- Container for the list of images -->
+            <div id="imageList" class="d-flex flex-wrap mt-3">
+                <!-- Thumbnails will be added here dynamically -->
+                {% if image_url %}
+                {% for url in image_url %}
+                <div class="thumbnail-container">
+                    <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

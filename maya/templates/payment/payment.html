@@ -1,0 +1,320 @@
+{% extends 'layout.html' %}
+{% block extra_css %}
+{{super()}}
+<style>
+  .card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+  }
+
+  .card-header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .price {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .price small {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+
+  .list-unstyled {
+    margin-bottom: 20px;
+  }
+
+  .list-unstyled li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .list-unstyled li:last-child {
+    border-bottom: none;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2rem;
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- navbar start -->
+{% include 'navbar.html' %}
+<!-- navbar ended -->
+
+<!--messages-->
+<div class="container">
+  {% include '_messages.html' %}
+</div>
+
+<div class="container">
+  <h1 class="text-center mb-5">Choose Your Plan</h1>
+  <div class="row">
+    <!-- Pack 1 -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          Basic Pack
+        </div>
+        <div class="card-body">
+          <div class="price">
+            &#8377;99<small>/100 coins</small>
+          </div>
+          <ul class="list-unstyled">
+            <li>✅ 2 Video to animation</li>
+            <li>✅ 100 text to image</li>
+            <li>✅ 100 image to image</li>
+          </ul>
+          <button id="basic_pack" class="btn btn-primary">Select Plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pack 2 -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header" style="background-color: rgb(171, 49, 219);">
+          Pro Pack
+        </div>
+        <div class="card-body">
+          <div class="price">
+            &#8377;499<small>/550 coins</small>
+          </div>
+          <ul class="list-unstyled">
+            <li>✅ 10 Video to animation</li>
+            <li>✅ 550 text to image</li>
+            <li>✅ 550 image to image</li>
+          </ul>
+          <button id="pro_pack" class="btn btn-primary">Select Plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pack 3 -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header" style="background-color: rgb(255, 215, 0);">
+          Premium Pack
+        </div>
+        <div class="card-body">
+          <div class="price">
+            &#8377;999<small>/1200 coins</small>
+          </div>
+          <ul class="list-unstyled">
+            <li>✅ 20 Video to animation</li>
+            <li>✅ 1200 text to image</li>
+            <li>✅ 1200 image to image</li>
+          </ul>
+          <button id="premium_pack" class="btn btn-primary">Select Plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+
+  document.getElementById("basic_pack").addEventListener('click', () => {
+    console.log('basic_pack')
+
+
+    fetch('/basicpack', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // model_type: document.getElementById('model_type').value
+      })
+    }).then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(`id: ${data['id']}`)
+        var options = {
+          "key": "rzp_test_kAGBcIJrGmwmEf",
+          "amount": data["amount"],
+          "currency": "INR",
+          "name": "Maya ai",
+          "description": "purchased basic pack",
+          "order_id": data["id"],
+          "handler": function (response) {
+            fetch('/verify_payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            }).then(res => res.json()).then(data => {
+
+              // alert(data.message);
+              console.log(data.message);
+
+              fetch('/payment_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  pack: "basic",
+                  message: data.message
+                })
+              }).then(res => res.json()).then(data => {
+                // alert(data.message);
+                if (data.success) {
+                  console.log("Payment successful:", data.message);
+                  window.location.href = "/payment_success"; // Redirect on success
+                } else {
+                  console.error("Payment failed:", data.message);
+                  alert("Payment verification failed!");
+                }
+              });
+
+            });
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+
+  })
+
+  document.getElementById("pro_pack").addEventListener('click', () => {
+
+    fetch('/propack', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // model_type: document.getElementById('model_type').value
+      })
+    }).then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(`id: ${data['id']}`)
+        var options = {
+          "key": "rzp_test_kAGBcIJrGmwmEf",
+          "amount": data["amount"],
+          "currency": "INR",
+          "name": "Maya ai",
+          "description": "purchased pro pack",
+          "order_id": data["id"],
+          "handler": function (response) {
+            fetch('/verify_payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            }).then(res => res.json()).then(data => {
+              // alert(data.message);
+
+              fetch('/payment_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  pack: "pro",
+                  message: data.message
+                })
+              }).then(res => res.json()).then(data => {
+                // alert(data.message);
+              });
+
+
+            });
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+  })
+
+  document.getElementById("premium_pack").addEventListener('click', () => {
+
+    fetch('/premiumpack', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        // model_type: document.getElementById('model_type').value
+      })
+    }).then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(`id: ${data['id']}`)
+        var options = {
+          "key": "rzp_test_kAGBcIJrGmwmEf",
+          "amount": data["amount"],
+          "currency": "INR",
+          "name": "Maya ai",
+          "description": "purchased premium pack",
+          "order_id": data["id"],
+          "handler": function (response) {
+            fetch('/verify_payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response)
+            }).then(res => res.json()).then(data => {
+
+              // alert(data.message);
+
+              fetch('/payment_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  pack: "premium",
+                  message: data.message
+                })
+              }).then(res => res.json()).then(data => {
+                // alert(data.message);
+              });
+
+            });
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+
+  })
+
+
+
+
+</script>
+
+{% endblock content %}

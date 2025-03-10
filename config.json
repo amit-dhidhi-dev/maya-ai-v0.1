@@ -1,0 +1,5 @@
+{
+    "APP_NAME": "Maya ai",
+    "SECRET_KEY": "paste_secret_key_here",
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///maya.db"
+}
