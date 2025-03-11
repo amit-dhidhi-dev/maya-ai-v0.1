@@ -59,7 +59,7 @@ def generate_image(model_path, prompt, output_path,
     img_paths=[]
     
     for index, image in enumerate(images):
-        image_path = f"{os.path.join(basedir, 'static', 'photos')}\{secrets.token_hex(10)}.png"
+        image_path = os.path.join(basedir, 'static', 'photos', f"{secrets.token_hex(10)}.png")
         image.save(image_path)
         img_paths.append(image_path)
         
