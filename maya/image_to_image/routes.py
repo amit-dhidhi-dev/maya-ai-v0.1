@@ -56,7 +56,7 @@ def imageToImage():
             return after_model_loaded(pipe, image, prompt, model_type)
     
     
-    return render_template("image_to_image/image_to_image.html", no_animation=False, 
+    return render_template("image_to_image/image_to_image.html", no_animation=False,                          
                            title=config.get('APP_NAME','image to image'),
                            app_name=config.get('APP_NAME','image to image')  )
     
@@ -70,7 +70,7 @@ def after_model_loaded(pipe, image, prompt, model_type):
             print(f"input_image_path : {input_image_path}")
             
             images = generate_image(pipe=pipe,control_image=input_image_path, prompt=prompt,
-                                       num_inference_steps=1,)
+                                       num_inference_steps=20,)
             
             image_url = []
             image_paths= []

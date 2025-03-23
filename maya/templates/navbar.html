@@ -17,11 +17,19 @@
           <form class="d-flex" role="search">
             {% if current_user.is_authenticated  %}
             <li class="nav-link" >
-              <a href="" style="text-decoration: none; color: inherit;"  >{{current_user.name}} </a>
-            </li>
-            <li class="nav-link ms-2 " >
-              <a href="{{ url_for('logout') }}"  class="btn btn-outline-info"  >Logout </a>
-            </li>
+              <i class="fa fa-user" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-hidden="ture"></i>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                  <li><a class="dropdown-item" href="#">{{current_user.name}} - 
+                    {%if current_user.payment %} 
+                    <strong>{{current_user.payment[0].current_coins}}</strong> 
+                    {%else %}
+                    <strong>0</strong>
+                    {% endif %}
+                     coins</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('payment') }}">Get coins</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+          </div>
             {% else  %}
             <li class="nav-link  ms-2 " >
               <a href="{{ url_for('register') }}" class="btn btn-outline-info"  >Register </a>

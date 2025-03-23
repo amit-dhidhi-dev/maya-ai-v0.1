@@ -31,12 +31,17 @@ def load_Model(model_name, use_gpu=False):
        controlnet_paths = [c1, c2]
        base_model_path = os.path.join("maya/models", model_name)  
         
-       controlnets = [ControlNetModel.from_single_file(
-            path
-        ) for path in controlnet_paths]
+       
+       if torch.cuda.is_available():
+           print("CUDA is available!")
+           use_gpu = True
+
+      
         # Initialize pipeline from local files
         
        if use_gpu:
+           controlnets = [ControlNetModel.from_single_file( path,
+                                                           torch_dtype=torch.float16 ) for path in controlnet_paths]
            pipe = pipe = StableDiffusionControlNetPipeline.from_single_file(
             base_model_path,
             controlnet=controlnets,
@@ -45,6 +50,8 @@ def load_Model(model_name, use_gpu=False):
         )
            pipe = pipe.to("cuda")
        else:
+           controlnets = [ControlNetModel.from_single_file( path ) for path in controlnet_paths]
+            
            pipe = pipe = StableDiffusionControlNetPipeline.from_single_file( base_model_path,
             controlnet=controlnets,
             chache_dir="G:/maya ai/test1/cache",)
@@ -130,7 +137,7 @@ def generate_image(
     # ).images[0]
     
     
-    control_image, width, height = load_image(control_image)
+    control_img, width, height = load_image(control_image)
     w, h = Image.open(control_image).size
     if w>512 or h>512 :
       width=w
@@ -143,7 +150,7 @@ def generate_image(
     output = pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
-        image=[control_image, control_image],  # Provide the same control image for each ControlNet
+        image=[control_img, control_img],  # Provide the same control image for each ControlNet
         num_inference_steps=num_inference_steps,
         guidance_scale=guidance_scale,
         controlnet_conditioning_scale=controlnet_conditioning_scale,

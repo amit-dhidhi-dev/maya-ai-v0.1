@@ -1,6 +1,8 @@
 
 
 document.getElementById('generateBtnImageToImage').disabled = true;
+// const spinner = document.querySelector('.spinner-border');
+document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'none';
 
 
 function imageCheckFormFields() {
@@ -45,7 +47,7 @@ document.getElementById('model_type').addEventListener('change',
 
         imageCheckFormFields();
         document.getElementById('generateBtnImageToImage').disabled = true;
-        
+        document.getElementById('modelLoadingOverlay').style.display = 'flex';
         fetch('/loadmodel', {
             method: 'POST',
             headers: {
@@ -58,11 +60,12 @@ document.getElementById('model_type').addEventListener('change',
             .then(data => {
                 console.log(data);
                 document.getElementById('generateBtnImageToImage').disabled = false;
-
+                document.getElementById('modelLoadingOverlay').style.display = 'none';
             })
             .catch((error) => {
                 console.error('Error:', error);
                 document.getElementById('generateBtnImageToImage').disabled = false;
+                document.getElementById('modelLoadingOverlay').style.display = 'none';
             });
 
     });
@@ -113,12 +116,30 @@ function adjustImagePlaceholderSize(imageSrc) {
 
 
 
-// const spinner = document.querySelector('.spinner-border');
-document.querySelector('.spinner-border').style.display = 'none';
 
 document.getElementById('generateBtnImageToImage').addEventListener('click', function () {
     console.log('Generating Image...1');
 
-    document.querySelector('.spinner-border').style.display = 'block';
+    document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'block';
 
+});
+
+
+
+document.getElementById('downloadAllBtn').addEventListener('click', function () {
+   
+    const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+
+    let jsonCompatible = dataValue.replace(/'/g, '"');
+    let list = JSON.parse(jsonCompatible);
+ 
+    list.forEach((image, index) => {
+        const link = document.createElement('a');   
+        link.download = `output_${index}.jpg`;
+        link.href = image;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
 });

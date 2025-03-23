@@ -2,7 +2,6 @@ from flask import render_template
 
 from maya import app, config
 
-
 @app.route("/")
 def home():
     return render_template("dashboard/home.html",

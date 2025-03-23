@@ -18,12 +18,12 @@
         z-index: 1000;
         color: white;
     }
-    
+
     .spinner-border {
         width: 3rem;
         height: 3rem;
     }
-    </style>
+</style>
 
 
 
@@ -140,7 +140,7 @@
                             </div>
                             <div class="mt-2">Loading Model...</div>
                         </div>
-                        
+
                         <label for="model_type_for_text" class="form-label">Image Style</label>
                         <select class="form-control" id="model_type_for_text" name="model_type_for_text">
                             {% if no_animation %}
@@ -160,7 +160,8 @@
 
 
                     <!-- Submit Button -->
-                    <button type="submit" id="generateBtnTextToImage" class="btn btn-primary" disabled>Generate Images</button>
+                    <button type="submit" id="generateBtnTextToImage" class="btn btn-primary" disabled>Generate
+                        Images</button>
                 </form>
             </div>
         </div>
@@ -184,6 +185,8 @@
                     <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
                 </div>
                 {% endfor %}
+                <button id="downloadAllBtn" class="btn btn-primary mt-3" data-value="{{image_url}}">Download
+                    All</button>
                 {% endif %}
             </div>
         </div>
@@ -191,7 +194,25 @@
 </div>
 
 
+<script>
+    document.getElementById('downloadAllBtn').addEventListener('click', function () {
 
+        const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+
+        let jsonCompatible = dataValue.replace(/'/g, '"');
+        let list = JSON.parse(jsonCompatible);
+
+        list.forEach((image, index) => {
+            const link = document.createElement('a');
+            link.download = `output_${index}.jpg`;
+            link.href = image;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
 
 
 {% endblock content %}

@@ -1,7 +1,7 @@
 
 
-document.getElementById('generateButtonVideo').disabled = true;
-document.querySelector('.spinner-border').style.display = 'none';
+// document.getElementById('generateButtonVideo').disabled = true;
+document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'none';
 
 
 
@@ -18,44 +18,42 @@ function checkFormFields() {
   }
 }
 
-
-
 document.getElementById('videoFile').addEventListener('change', function (e) {
   const file = e.target.files[0];
   if (file) {
-      const video = document.createElement('video');
-      video.src = URL.createObjectURL(file);
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
 
-      video.addEventListener('loadeddata', function () {
-          // Get the first frame
-          const canvas = document.getElementById('framePreview');
-          const context = canvas.getContext('2d');
+    video.addEventListener('loadeddata', function () {
+      // Get the first frame
+      const canvas = document.getElementById('framePreview');
+      const context = canvas.getContext('2d');
 
-          // Set canvas dimensions to match video
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-          // Draw the first frame
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Draw the first frame
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-          // Show the canvas and Copilot link
-          canvas.style.display = 'block';
-          // document.getElementById('downloadFrame').style.display = 'block';
-          // Create Copilot link with frame data
-          const frameData = canvas.toDataURL('image/jpeg');
-          const copilotLink = document.getElementById('copilotLink');
-          copilotLink.style.display = 'block';
-          copilotLink.querySelector('a').href = `https://copilot.microsoft.com/?desc=${encodeURIComponent('Describe this video frame:')}`;
+      // Show the canvas and Copilot link
+      canvas.style.display = 'block';
+      // document.getElementById('downloadFrame').style.display = 'block';
+      // Create Copilot link with frame data
+      const frameData = canvas.toDataURL('image/jpeg');
+      const copilotLink = document.getElementById('copilotLink');
+      copilotLink.style.display = 'block';
+      copilotLink.querySelector('a').href = `https://copilot.microsoft.com/?desc=${encodeURIComponent('Describe this video frame:')}`;
 
-          // Enable generate button
-          // document.getElementById('generateButtonVideo').disabled = false;
-      });
+      // Enable generate button
+      // document.getElementById('generateButtonVideo').disabled = false;
+    });
 
-      // Show video preview
-      const videoPreview = document.getElementById('videoPreview');
-      videoPreview.src = URL.createObjectURL(file);
-      videoPreview.style.display = 'block';
-      document.getElementById('videoPreviewtext').style.display = 'none';
+    // Show video preview
+    const videoPreview = document.getElementById('videoPreview');
+    videoPreview.src = URL.createObjectURL(file);
+    videoPreview.style.display = 'block';
+    document.getElementById('videoPreviewtext').style.display = 'none';
   }
 
   checkFormFields();
@@ -68,20 +66,20 @@ function downloadFrame() {
   const videoFile = document.getElementById('videoFile').files[0];
 
   if (canvas && videoFile) {
-      // Create a download link
-      const link = document.createElement('a');
+    // Create a download link
+    const link = document.createElement('a');
 
-      // Get the filename without extension
-      const baseFileName = videoFile.name.replace(/\.[^/.]+$/, "");
+    // Get the filename without extension
+    const baseFileName = videoFile.name.replace(/\.[^/.]+$/, "");
 
-      // Set the download attributes
-      link.download = `${baseFileName}_frame.jpg`;
-      link.href = canvas.toDataURL('image/jpeg', 0.8);
+    // Set the download attributes
+    link.download = `${baseFileName}_frame.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.8);
 
-      // Trigger the download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }
 
@@ -94,7 +92,7 @@ document.getElementById('model_type').addEventListener('change', () => {
   checkFormFields();
 
   document.getElementById('generateButtonVideo').disabled = true;
-
+  document.getElementById('modelLoadingOverlay').style.display = 'flex';
   fetch('/loadvideomodel', {
     method: 'POST',
     headers: {
@@ -107,11 +105,13 @@ document.getElementById('model_type').addEventListener('change', () => {
     .then(data => {
       console.log(data);
       document.getElementById('generateButtonVideo').disabled = false;
+      document.getElementById('modelLoadingOverlay').style.display = 'none';
 
     })
     .catch((error) => {
       console.error('Error:', error);
       document.getElementById('generateButtonVideo').disabled = false;
+      document.getElementById('modelLoadingOverlay').style.display = 'none';
     });
 });
 
@@ -121,19 +121,31 @@ document.getElementById('generateButtonVideo').addEventListener('click', functio
 
   console.log('clicked ' + (document.getElementById('videoFile').files.length > 0));
 
-  document.querySelector('.spinner-border').style.display = 'block';
-
+  document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'block';
 });
 
 
-document.getElementById("flexCheckChecked").addEventListener("change", function() {
+document.getElementById("flexCheckChecked").addEventListener("change", function () {
   let button = document.getElementById("generateButtonVideo");
   var status = document.getElementById("checkbox");
   if (this.checked) {
-      button.textContent = "Check Style ";
-      status.value = "style"
+    button.textContent = "Check Style ";
+    status.value = "style"
   } else {
-      button.textContent = "Generate Video";
-      status.value = "video"
+    button.textContent = "Generate Video";
+    status.value = "video"
   }
+});
+
+// download generated video button
+document.getElementById('downloadVideoBtn').addEventListener('click',function() {
+  
+  let videoUrl=this.getAttribute("data-value");
+  let anchor = document.createElement('a');
+  anchor.href = videoUrl; // Set the video file URL
+  anchor.download =  videoUrl.substring(videoUrl.lastIndexOf('/') + 1); // Set the desired file name for the download
+  document.body.appendChild(anchor); // Add the anchor to the document
+  anchor.click(); // Programmatically click the anchor to start download
+  document.body.removeChild(anchor);
+
 });

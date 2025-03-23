@@ -1,4 +1,12 @@
    /* Custom styles */
+   .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+   
+   
    .image-placeholder {
     background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
     border-radius: 10px;

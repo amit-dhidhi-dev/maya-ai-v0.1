@@ -58,26 +58,32 @@ def videoToVideo():
        
         if video:
             if len(seedAndFrameDict) == 0:
-              
+                print('inside the seed and frame dict')
                 # save the video
                 filename = secure_filename(f"{secrets.token_hex(8)}_{video.filename}")
                 video_path  = os.path.join(basedir,'static','videos',filename)
                 video.save(video_path)
-                print(f"Video saved {video_path}")
             
                 # get video info 
                 frames_path, fps, duration, audio, frames_list = get_video_info(video_path)
-                print("Frames path extracted:", len(frames_path))
-                print("Frames list extracted:", len(frames_list))
-                print("FPS:", fps)
-                print("Duration:", duration)
-                print("Audio:", audio)           
-            
+                
+                # check video duration is no longer than 10 seconds
+                if duration > 10:
+                    flash("Video duration is too long. Please upload a video with a duration of 10 seconds or less.", "danger")
+                    return redirect(url_for('videoToVideo'))
+                
+                # check he has enough coins
+                if user_payment.current_coins < (len(frames_path) * 3):
+                    flash("you do not have enough coins for this operation. ", "danger")
+                    return redirect(url_for('payment'))
+             
             if status == "video":   
                 print('generate video')
+              
                 seed = None
                 if frameSrc:
                     seed = seedAndFrameDict[frameSrc]
+                    seedAndFrameDict.clear()  
                 if pipe:
                     print("Model loaded successfully")
                     return after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed)
@@ -96,8 +102,14 @@ def videoToVideo():
                     return after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path)
     
     
+                            
+                            #   original_video='static/videos/short_video.mp4',
+                            # # image_url=['static/photos/sd.png','static/photos/1_4.png'],  
+                            #  generated_video='static/videos/short_video.mp4',
+                            #    prompt='prompt',model_type='option2',     
+                           
     
-    return render_template("video_to_video/video_to_video.html", no_animation=False, 
+    return render_template("video_to_video/video_to_video.html", no_animation=False,                     
                            title=config.get('APP_NAME','video to video'),
                            app_name=config.get('APP_NAME','video to video')  )
 
@@ -115,7 +127,7 @@ def after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt
         seed = random.randint(0,1000000000000)
     
         frames = generate_image(pipe=pipe, control_image=frames_path[0], 
-                             prompt=prompt,num_inference_steps=1, 
+                             prompt=prompt,num_inference_steps=20, 
                              seed=seed) 
     
     
@@ -132,7 +144,7 @@ def after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt
      # update coins in account
         user_payment = Payment.query.filter_by(user_id=current_user.id).first()
         if user_payment:
-            user_payment.current_coins = user_payment.current_coins - 3         
+            user_payment.current_coins = user_payment.current_coins - (3 * 4)         
             db.session.commit()
     
     
@@ -156,7 +168,7 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
         seed = random.randint(0,1000000000000)
     
     frames = [generate_image(pipe=pipe, control_image=frame, 
-                             prompt=prompt,num_inference_steps=1, 
+                             prompt=prompt,num_inference_steps=20, 
                              seed=seed) for frame in frames_path ] 
     
     
@@ -182,8 +194,10 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
      # update coins in account
     user_payment = Payment.query.filter_by(user_id=current_user.id).first()
     if user_payment:
-            user_payment.current_coins = user_payment.current_coins - 50
+            user_payment.current_coins = user_payment.current_coins - (3 * len(frames_path))
             db.session.commit()
+            
+            
     
     return render_template("video_to_video/video_to_video.html", no_animation=True,
                            original_video=video_path, generated_video=output_video_path,
@@ -308,7 +322,8 @@ def loadvideomodel():
     data = request.get_json()
     model_type = data.get('model_type')
 
-  
+    if pipe:
+        pipe=None
     
     
     if model_type=="option1":

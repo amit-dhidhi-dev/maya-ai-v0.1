@@ -23,17 +23,9 @@ def textToImage():
             flash("you are not log in",'danger')
             return redirect(url_for('home'))
         
-        # check user payment
-        user_payment = Payment.query.filter_by(user_id=current_user.id).first()        
-        if user_payment:
-            if user_payment.current_coins < 10:
-                  flash("you do not have enough coins for this operation. ", "danger")
-                  return redirect(url_for('payment'))
-        else:
-            flash("you do not have any plan now. ", "danger")
-            return redirect(url_for('payment'))
         
         
+          
         data = request.form
         print(data)
         
@@ -45,6 +37,18 @@ def textToImage():
         height = data.get('height')
         
         print(f"width: {width}, height: {height}, model_type: {model_type}")
+        
+        # check user payment
+        user_payment = Payment.query.filter_by(user_id=current_user.id).first()        
+        if user_payment:
+            if user_payment.current_coins < (1 * int(numberOfImages)):
+                  flash("you do not have enough coins for this operation. ", "danger")
+                  return redirect(url_for('payment'))
+        else:
+            flash("you do not have any plan now. ", "danger")
+            return redirect(url_for('payment'))
+        
+      
         
         if model_type == "option1":
             model_path = "pyrite_v4.safetensors" 
@@ -60,7 +64,7 @@ def textToImage():
             return after_text_model_loaded(pipe,  prompt, int(numberOfImages), int(width), int(height), imageRatio, model_type)       
                     
             
-    return render_template("text_to_image/text_to_image.html", no_animation=False,                          
+    return render_template("text_to_image/text_to_image.html", no_animation=False,                        
                            title=config.get('APP_NAME','text to image'),
                            app_name=config.get('APP_NAME','text to image')  )
 
@@ -72,7 +76,7 @@ def after_text_model_loaded(pipe,  prompt, numberOfImages, width, height, imageR
         output_path=output_path+'.png'
         
         images = generate_image_from_text(pipe, prompt, 
-                                   num_inference_steps=1,
+                                   num_inference_steps=20,
                                    num_images_per_prompt=numberOfImages,
                                    width=width, height=height)
         
@@ -101,7 +105,7 @@ def after_text_model_loaded(pipe,  prompt, numberOfImages, width, height, imageR
         # update coins in account
         user_payment = Payment.query.filter_by(user_id=current_user.id).first()
         if user_payment:
-            user_payment.current_coins = user_payment.current_coins - 1
+            user_payment.current_coins = user_payment.current_coins - (1 * numberOfImages)
             db.session.commit()
             
         print(f"image_url: {image_url}")            
@@ -125,7 +129,7 @@ def load_model_text():
     global pipe
     try:
         data = request.get_json()
-        model_type = data.get('model_type')  # Changed from model_type_for_text
+        model_type = data.get('model_type_for_text')  # Changed from model_type_for_text
         
         print(f"model_type: {model_type}, data: {data}")
         

@@ -26,6 +26,7 @@
         display: none;
     }
 
+
     .spinner-border {
         display: none;
     }
@@ -34,17 +35,21 @@
         display: block;
     }
 </style>
+{% if generated_video %}
+<style>
+    .image-placeholder {
+        display: none;
+    }
 
-<script>
-    var videoPreview = document.getElementById('videoPreview');
-    console.log(videoPreview)
-    var videoPreviewtext = document.getElementById('videoPreviewtext');
-    videoPreviewtext.style.display = 'none';
-    videoPreview.style.display = 'block';
-    document.getElementById('generateButtonVideo').disabled = false;
+    #generatedVideoPreview {
+        display: block;
+    }
 
-</script>
-
+    .thumbnail-container {
+        display: none;
+    }
+</style>
+{%endif%}
 {% endif %}
 {% endblock %}
 
@@ -134,6 +139,15 @@
 
                     <!-- Dropdown Example -->
                     <div class="mb-3">
+
+                        <div class="model-loading-overlay" id="modelLoadingOverlay" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading model...</span>
+                            </div>
+                            <div class="mt-2">Loading Model...</div>
+                        </div>
+
+
                         <label for="model_type" class="form-label">Image Style</label>
                         <select class="form-control" id="model_type" name="model_type">
                             {% if no_animation %}
@@ -151,17 +165,22 @@
                         </select>
                     </div>
 
-                     <div class="mb-3">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" >
+                    <div class="mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
                         <label class="form-check-label" for="flexCheckChecked">
-                          check video style
+                            check video style
                         </label>
                         <input type="hidden" id="checkbox" name="checkbox" value="video">
                         <input type="hidden" id="selectFrameSrc" name="selectFrameSrc">
-                     </div>   
+                    </div>
                     <!-- Submit Button -->
+                    {% if image_url %}
+                    <button type="submit" id="generateButtonVideo" class="btn btn-primary mt-3">Generate
+                        Video</button>
+                    {% else %}
                     <button type="submit" id="generateButtonVideo" class="btn btn-primary mt-3" disabled>Generate
                         Video</button>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -174,12 +193,14 @@
                 {% if image_url %}
                 <img id="displayImage" src="{{image_url[0]}}" alt="Generated Image">
                 {% endif %}
-                {% if no_animation %}
-                {% if generated_video %}
-                <video id="generatedVideoPreview" src="{{generated_video}}" class="video-preview" controls></video>
-                {% endif %}
-                {% endif %}
+
             </div>
+            {% if no_animation %}
+            {% if generated_video %}
+            <video id="generatedVideoPreview" src="{{generated_video}}" class="video-preview" controls></video>
+            <button id="downloadVideoBtn" class="btn btn-primary mt-3" data-value="{{generated_video}}" >Download video</button>
+            {% endif %}
+            {% endif %}
             <div id="imageList" class="d-flex flex-wrap mt-3">
                 <!-- Thumbnails will be added here dynamically -->
                 {% if image_url %}
@@ -188,6 +209,7 @@
                     <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
                 </div>
                 {% endfor %}
+                <button id="downloadAllStyleImagesBtn" class="btn btn-primary mt-3" data-value="{{image_url}}" >Download All</button>
                 {% endif %}
             </div>
 
@@ -197,15 +219,42 @@
 
 
 
-
 {% if no_animation %}
+{%if image_url%}
+<script>
+    document.getElementById('generateButtonVideo').disabled = false;
+    document.getElementById('downloadAllStyleImagesBtn').addEventListener('click', function () {
+   
+   const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+
+   let jsonCompatible = dataValue.replace(/'/g, '"');
+   let list = JSON.parse(jsonCompatible);
+
+   list.forEach((image, index) => {
+       const link = document.createElement('a');   
+       link.download = `output_${index}.jpg`;
+       link.href = image;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+   });
+});
+</script>
+{%endif%}
 
 <script>
+
+
+    document.getElementById('videoPreviewtext').style.display = 'none';
+    document.getElementById('videoPreview').style.display = 'block';
+    document.getElementById('generateButtonVideo').disabled = false;
+
 
     var displayImage = document.querySelector('#displayImage');
     var thumbnails = document.querySelectorAll('.thumbnail-img');
     var firstThumbnail = document.querySelector('.thumbnail-img');
-    var selectFrameSrc =  document.getElementById('selectFrameSrc')
+    var selectFrameSrc = document.getElementById('selectFrameSrc')
     firstThumbnail.classList.add('selected-thumbnail');
     document.querySelector('#displayImage').src = firstThumbnail.src;
     selectFrameSrc.value = firstThumbnail.src;
@@ -218,7 +267,7 @@
 
             thumbnail.classList.add('selected-thumbnail');
             displayImage.src = thumbnail.src;
-            selectFrameSrc.value=thumbnail.src;
+            selectFrameSrc.value = thumbnail.src;
             adjustImagePlaceholderSize(thumbnail.src);
         });
     });
