@@ -160,8 +160,13 @@
 
 
                     <!-- Submit Button -->
+                    {% if image_url %}
+                    <button type="submit" id="generateBtnTextToImage" class="btn btn-primary">Generate
+                        Images</button>
+                    {% else %}
                     <button type="submit" id="generateBtnTextToImage" class="btn btn-primary" disabled>Generate
                         Images</button>
+                    {% endif %}
                 </form>
             </div>
         </div>

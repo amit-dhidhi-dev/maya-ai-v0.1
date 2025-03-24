@@ -39,8 +39,9 @@ ratioOptions.forEach(option => {
             img.style.width = `${width}px`; // Set the width
             img.style.height = `${height}px`; // Set the height
         }
-        widthInput.value = width;
-        heightInput.value = height;
+        // make width and height should be divisiable by 8
+        widthInput.value = 8 * Math.floor(width/8);
+        heightInput.value = 8 * Math.floor(height/8);
     });
 });
 

@@ -14,6 +14,10 @@ def load_model_for_text(model_path, use_gpu=False):
     
     model_path = os.path.join("maya/models", model_path)
     
+    if torch.cuda.is_available():
+        print("CUDA is available!")
+        use_gpu = True
+           
     if use_gpu:
         pipe = StableDiffusionPipeline.from_single_file(model_path,
                                                         chache_dir="G:/maya ai/test1/cache",
@@ -31,8 +35,22 @@ def load_model_for_text(model_path, use_gpu=False):
 def generate_image_from_text(pipe, prompt,
                    num_inference_steps=20,num_images_per_prompt=1,
                    width=512, height=512):
-     
-    images = pipe(prompt, width=width, height=height,
+    
+    negative_prompt="""
+    
+    Bad anatomy, deformed fingers, extra fingers, missing fingers, distorted hands,
+    disfigured hands, unrealistic proportions, malformed digits, blurry hands,
+    incorrect hand positioning.
+    
+    Blur, distortion, bad anatomy, extra limbs, missing limbs,
+    deformed features, unrealistic proportions, unnatural lighting, 
+    overexposed areas, underexposed areas, noise, artifacts, bad composition,
+    incorrect perspective, unwanted text, watermark, overly saturated colors,
+    low resolution, bad quality, pixelated textures, unnatural poses, 
+    poor alignment, blurry edges
+    
+    """ 
+    images = pipe(prompt, negative_prompt=negative_prompt, width=width, height=height,
                   num_inference_steps=num_inference_steps,
                   num_images_per_prompt=num_images_per_prompt).images
     
