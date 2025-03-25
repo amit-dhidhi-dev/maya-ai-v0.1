@@ -38,6 +38,16 @@ def textToImage():
         
         print(f"width: {width}, height: {height}, model_type: {model_type}")
         
+        # time taken to generate image 
+        # 1:1(512x512) - 2 sec/img
+        # 4:3 (680x512) - 3 sec/img
+        # 16:9 (904x512) - 5 sec/img
+        # 9:16 (512x904) - 5 sec/img
+        # 3:2 (768x512) - 4 sec/img
+        # 2:3 (512x768) - 4 sec/img
+      
+        
+        
         # check user payment
         user_payment = Payment.query.filter_by(user_id=current_user.id).first()        
         if user_payment:

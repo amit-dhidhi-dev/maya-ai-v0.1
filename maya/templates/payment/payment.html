@@ -241,6 +241,13 @@
                 })
               }).then(res => res.json()).then(data => {
                 // alert(data.message);
+                if (data.success) {
+                  console.log("Payment successful:", data.message);
+                  window.location.href = "/payment_success"; // Redirect on success
+                } else {
+                  console.error("Payment failed:", data.message);
+                  alert("Payment verification failed!");
+                }
               });
 
 
@@ -296,6 +303,13 @@
                 })
               }).then(res => res.json()).then(data => {
                 // alert(data.message);
+                if (data.success) {
+                  console.log("Payment successful:", data.message);
+                  window.location.href = "/payment_success"; // Redirect on success
+                } else {
+                  console.error("Payment failed:", data.message);
+                  alert("Payment verification failed!");
+                }
               });
 
             });

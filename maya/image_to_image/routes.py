@@ -55,8 +55,11 @@ def imageToImage():
             pipe =  load_Model(model_path)
             return after_model_loaded(pipe, image, prompt, model_type)
     
+    #   no_animation=True, image_url=image_url,
+    #    prompt=prompt,model_type=model_type,
+    #    input_image_path='static/photos/1.png'
     
-    return render_template("image_to_image/image_to_image.html", no_animation=False,                          
+    return render_template("image_to_image/image_to_image.html",  no_animation=False,                   
                            title=config.get('APP_NAME','image to image'),
                            app_name=config.get('APP_NAME','image to image')  )
     
@@ -64,7 +67,8 @@ def imageToImage():
 def after_model_loaded(pipe, image, prompt, model_type):
     try:
             # save input image to database
-            input_image_path = f"{os.path.join(basedir, 'static', 'photos')}\{secrets.token_hex(10)}.png"
+            # input_image_path = f"{os.path.join(basedir, 'static', 'photos')}\{secrets.token_hex(10)}.png"
+            input_image_path = os.path.join(basedir, 'static', 'photos', f"{secrets.token_hex(10)}.png")
             input_image=Image.open(io.BytesIO(image.read()))
             input_image.save(input_image_path)
             print(f"input_image_path : {input_image_path}")
@@ -99,11 +103,12 @@ def after_model_loaded(pipe, image, prompt, model_type):
                 db.session.commit()
                 print(f"payment update successful ")
             
+            input_image_path=url_for('static', filename='photos/' + os.path.basename(input_image_path))
                         
             return render_template("image_to_image/image_to_image.html",
                                    no_animation=True, image_url=image_url,
                                    prompt=prompt,model_type=model_type,
-                                   input_image_path=url_for('static', filename='photos/' + os.path.basename(input_image_path)),
+                                   input_image_path=input_image_path,
                            title=config.get('APP_NAME','image to image'),
                            app_name=config.get('APP_NAME','image to image')  )
             

@@ -143,8 +143,25 @@ def generate_image(
       width=w
       height=h
 
+    # width and hight shoud be divisiable by 8
+    width= 8 * (widht // 8)
+    height= 8 * (height // 8)
     
-    negative_prompt = "low quality, blurry, bad art"
+    negative_prompt="""
+    
+    Bad anatomy, deformed fingers, extra fingers, missing fingers, distorted hands,
+    disfigured hands, unrealistic proportions, malformed digits, blurry hands,
+    incorrect hand positioning.
+    
+    Blur, distortion, bad anatomy, extra limbs, missing limbs,
+    deformed features, unrealistic proportions, unnatural lighting, 
+    overexposed areas, underexposed areas, noise, artifacts, bad composition,
+    incorrect perspective, unwanted text, watermark, overly saturated colors,
+    low resolution, bad quality, pixelated textures, unnatural poses, 
+    poor alignment, blurry edges
+    
+    """
+    # negative_prompt = "low quality, blurry, bad art"
     print(prompt)
 
     output = pipe(

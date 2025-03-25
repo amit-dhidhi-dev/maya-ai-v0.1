@@ -6,7 +6,7 @@ const selectedRatioInput = document.getElementById('selectedRatio');
 const widthInput = document.getElementById('width');
 const heightInput = document.getElementById('height');
 
-document.getElementById('generateBtnTextToImage').disabled = true;
+// document.getElementById('generateBtnTextToImage').disabled = true;
 document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'none';
 
 ratioOptions.forEach(option => {

@@ -1,6 +1,6 @@
 
 
-document.getElementById('generateBtnImageToImage').disabled = true;
+// document.getElementById('generateBtnImageToImage').disabled = true;
 // const spinner = document.querySelector('.spinner-border');
 document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'none';
 

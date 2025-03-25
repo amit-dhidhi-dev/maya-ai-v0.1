@@ -223,6 +223,11 @@ def get_video_info(video_path):
     frame_list = []
     frames = []
     frame_count = 0
+    
+    #  make frames directory if not available
+    directory_path='static/frames'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
 
     # Read and save frames with error handling
     while True:
@@ -241,6 +246,11 @@ def get_video_info(video_path):
 
     cap.release()
 
+     #  make frames directory if not available
+    directory_path='static/audio'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+    
     # Extract audio using try-except block
     try:
         video = VideoFileClip(video_path)
