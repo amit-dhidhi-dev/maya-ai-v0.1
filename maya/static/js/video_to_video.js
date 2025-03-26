@@ -122,6 +122,10 @@ document.getElementById('generateButtonVideo').addEventListener('click', functio
   console.log('clicked ' + (document.getElementById('videoFile').files.length > 0));
 
   document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'block';
+
+  document.getElementById('generateButtonVideo').disabled = true;
+  document.getElementById('generateButtonVideo').textContent = "Generating...";
+
 });
 
 

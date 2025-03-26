@@ -282,7 +282,9 @@ def generate_video(frames_path, fps, duration, audio_path, frames_list):
         print(f"Frame Height: {frame_height}, Frame Width: {frame_width}")
         
         # Use H.264 codec instead of mp4v
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")
+        # fourcc = cv2.VideoWriter_fourcc(*"avc1")
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+
         
         output_video_path = os.path.join(basedir, 'static', 'generated_videos', f"{secrets.token_hex(10)}.mp4")
         
@@ -324,10 +326,20 @@ def generate_video(frames_path, fps, duration, audio_path, frames_list):
                 
                 return final_output_path
             except Exception as e:
-                print(f"Error adding audio: {str(e)}")
-                return output_video_path
-        
-        return output_video_path
+                 print(f"Error adding audio: {str(e)}")               
+                 video=VideoFileClip(output_video_path)
+                 final_output_path = os.path.join(basedir, 'static','generated_videos', f"{secrets.token_hex(10)}.mp4")
+                 video.write_videofile(final_output_path)
+                 video.close()
+                 os.remove(output_video_path)
+                 return final_output_path
+        else:
+            video=VideoFileClip(output_video_path)
+            final_output_path = os.path.join(basedir, 'static','generated_videos', f"{secrets.token_hex(10)}.mp4")
+            video.write_videofile(final_output_path)
+            video.close()
+            os.remove(output_video_path)
+            return final_output_path
     except Exception as e:
         print(f"Error generating video: {str(e)}")
         return None

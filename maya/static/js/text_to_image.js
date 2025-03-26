@@ -115,6 +115,8 @@ document.getElementById('textToImageForm').addEventListener('submit', function (
     imagePlaceholder.querySelector('.spinner-border').style.display = 'block';
     displayImage.style.display = 'none';
 
+    document.getElementById('generateBtnTextToImage').disabled = true;
+
 });
 
 // load model 

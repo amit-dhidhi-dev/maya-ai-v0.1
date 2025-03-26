@@ -122,6 +122,8 @@ document.getElementById('generateBtnImageToImage').addEventListener('click', fun
 
     document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'block';
 
+    document.getElementById('generateBtnImageToImage').disabled = true;
+
 });
 
 

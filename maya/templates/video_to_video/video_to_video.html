@@ -267,6 +267,13 @@
 </script>
 {%endif%}
 
+{% if generated_video %}
+<script>
+     document.getElementById('generateButtonVideo').disabled = false;
+     document.getElementById('generateButtonVideo').textContent = "Generate Video";
+</script>
+{% endif %}
+
 <script>
 
 
@@ -318,11 +325,5 @@
 </script>
 
 {% endif %}
-
-
-<script>
-
-
-</script>
 
 {% endblock content %}
