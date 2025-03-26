@@ -23,7 +23,12 @@ def videoToVideo():
     
     global pipe
     global seedAndFrameDict
-    
+    global frames_path 
+    global fps
+    global duration
+    global audio
+    global frames_list
+    global video_path
     if request.method == 'POST':
         
         
@@ -56,7 +61,7 @@ def videoToVideo():
         
         print(model_type, video, prompt, status, request.form) 
        
-        if video:
+        if video or len(seedAndFrameDict) > 0:
             if len(seedAndFrameDict) == 0:
                 print('inside the seed and frame dict')
                 # save the video
@@ -82,7 +87,7 @@ def videoToVideo():
               
                 seed = None
                 if frameSrc:
-                    seed = seedAndFrameDict[frameSrc]
+                    seed = seedAndFrameDict[os.path.basename(frameSrc)]
                     seedAndFrameDict.clear()  
                 if pipe:
                     print("Model loaded successfully")
@@ -107,7 +112,8 @@ def videoToVideo():
                             # # image_url=['static/photos/sd.png','static/photos/1_4.png'],  
                             #  generated_video='static/videos/short_video.mp4',
                             #    prompt='prompt',model_type='option2',     
-                           
+        else:
+            print('video not found')                   
     
     return render_template("video_to_video/video_to_video.html", no_animation=False,                     
                            title=config.get('APP_NAME','video to video'),
@@ -133,12 +139,12 @@ def after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt
     
     # save frame path
         frame_path = os.path.join(basedir,'static','photos',f"{frame_path}_{i:04d}.png")
-        frames.save(frame_path)
+        frames[0].save(frame_path)
     
     
         frame_url = url_for('static', filename='photos/' + os.path.basename(frame_path))
         frame_urls.append(frame_url)
-        seedAndFrameDict[frame_url]=seed
+        seedAndFrameDict[os.path.basename(frame_path)]=seed
     
     
      # update coins in account
@@ -147,10 +153,10 @@ def after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt
             user_payment.current_coins = user_payment.current_coins - (3 * 4)         
             db.session.commit()
     
-    
+    video_path_url=url_for('static', filename='videos/' + os.path.basename(video_path))
     
     return render_template("video_to_video/video_to_video.html", no_animation=True,
-                           original_video=video_path, image_url=frame_urls,
+                           original_video=video_path_url, image_url=frame_urls,
                                prompt=prompt,model_type=model_type,                                 
                            title=config.get('APP_NAME','video to video'),
                            app_name=config.get('APP_NAME','video to video')  )
@@ -186,7 +192,9 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
     db.session.add(unit)
     db.session.commit()
     
-    
+    directory_path='maya/static/generated_videos'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
     # get url of both videos
     video_path = url_for('static', filename='videos/' + os.path.basename(video_path))
     output_video_path= url_for('static', filename='generated_videos/' + os.path.basename(output_video_path))
@@ -197,10 +205,10 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
             user_payment.current_coins = user_payment.current_coins - (3 * len(frames_path))
             db.session.commit()
             
-            
+    video_path_url=url_for('static', filename='videos/' + os.path.basename(video_path))        
     
     return render_template("video_to_video/video_to_video.html", no_animation=True,
-                           original_video=video_path, generated_video=output_video_path,
+                           original_video=video_path_url, generated_video=output_video_path,
                                prompt=prompt,model_type=model_type,                                 
                            title=config.get('APP_NAME','video to video'),
                            app_name=config.get('APP_NAME','video to video')  )
@@ -225,7 +233,7 @@ def get_video_info(video_path):
     frame_count = 0
     
     #  make frames directory if not available
-    directory_path='static/frames'
+    directory_path='maya/static/frames'
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
 
@@ -247,7 +255,7 @@ def get_video_info(video_path):
     cap.release()
 
      #  make frames directory if not available
-    directory_path='static/audio'
+    directory_path='maya/static/audio'
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
     

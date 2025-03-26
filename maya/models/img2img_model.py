@@ -144,7 +144,7 @@ def generate_image(
       height=h
 
     # width and hight shoud be divisiable by 8
-    width= 8 * (widht // 8)
+    width= 8 * (width // 8)
     height= 8 * (height // 8)
     
     negative_prompt="""
