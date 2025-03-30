@@ -1,0 +1,273 @@
+{% extends 'layout.html' %}
+
+{% block extra_css %}
+<style>
+  .thumbnail-container {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 50px;
+    position: relative;
+    overflow: hidden;
+    margin-right: 5px;
+  }
+
+  .thumbnail-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .selected-thumbnail {
+    border: 2px solid #007bff;
+    /* Blue border for the selected image */
+    background-color: #f0f8ff;
+    /* Light blue background for the selected image */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+
+<div class="container">
+
+
+  {% if text_to_image %}
+  <!-- for showing text to image generation -->
+    {% for obj in text_to_image  %} 
+  <div id="texttoimage">
+    <div class="container mt-4">
+      <div class="card shadow">
+        <div class="row g-0">
+          <!-- Text Side -->
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="card-body">
+              <h5 class="card-title">Prompt :</h5>
+              <p class="card-text">
+                {{ obj.prompt }}
+              </p>
+              <p class="card-text">
+                <small class="text-muted">Date: {{obj.date}} </small>
+              </p>
+            </div>
+          </div>
+
+          <!-- Image Side -->
+          <div class="col-md-6">
+            {% if t2i_images %}
+            {% if obj.id in t2i_images %}
+            <img id="showImage" src="{{ t2i_images.get(obj.id)[0]  }}" class="img-fluid rounded-end m-3" alt="Card Image">
+             {% endif %}
+            {% endif %} 
+            <!-- Container for the list of images -->
+            <div id="imageList" class="d-flex flex-wrap mt-3">
+              <!-- Thumbnails will be added here dynamically -->
+              {% if t2i_images %}
+              {% if obj.id in t2i_images %}
+              {% for url in t2i_images.get(obj.id) %}
+              <div class="thumbnail-container">
+                <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
+              </div>
+              {% endfor %}
+              <button id="galleryDownloadBtn" class="btn btn-primary mt-3" data-value="{{t2i_images.get(obj.id)}}">Download
+                All</button>
+              {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+    {% endfor  %}
+
+ {% elif image_to_image  %}
+  <!-- for showing image to image generation -->
+  {% for obj in image_to_image  %} 
+  <div id="imagetoimage">
+    <div class="container mt-4">
+      <div class="card shadow">
+        <div class="row g-0">
+          <!-- Side with Image and Text -->
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="card-body">
+              {% if obj.id in i2i_images %}
+              <img src="{{i2i_images.get(obj.id)[0]}}" class="img-fluid mb-3" alt="Small Image">
+              {% endif  %}
+              <h5 class="card-title">Prompt :</h5>
+              <p class="card-text">{{obj.prompt}}</p>
+              <p class="card-text">
+                <small class="text-muted">Date : {{obj.date}}</small>
+              </p>
+            </div>
+          </div>
+
+          <!-- Side with Only Image -->
+           <!-- Image Side -->
+           <div class="col-md-6">
+            {% if obj.id in i2i_images %}
+            <img id="showImage" src="{{i2i_images.get(obj.id)[1][0]}}" class="img-fluid rounded-end m-3" alt="Card Image">
+            {% endif  %}
+            <!-- Container for the list of images -->
+            <div id="imageList" class="d-flex flex-wrap mt-3">
+              <!-- Thumbnails will be added here dynamically -->
+              {% if obj.id in i2i_images %}
+              {% for url in i2i_images.get(obj.id)[1] %}
+              <div class="thumbnail-container">
+                <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
+              </div>
+              {% endfor %}
+              <button id="galleryDownloadBtn" class="btn btn-primary mt-3" data-value="{{i2i_images.get(obj.id)[1]}}">Download
+                All</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor  %}
+
+  {% elif video_to_video  %}
+  <!-- for showing video to video generation  -->
+  {% for obj in video_to_video  %} 
+  <div id="videotovideo">
+    <div class="container mt-4">
+      <div class="card">
+        <div class="row g-0">
+          <!-- Side with Video and Text -->
+          <div class="col-md-6 d-flex align-items-center">
+            <div class="card-body">
+              {% if obj.id in v2v_videos  %}
+              <video class="img-fluid mb-3" controls>
+                <source src="{{ v2v_videos.get(obj.id)[0]  }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              {% endif  %}
+              <h5 class="card-title">Prompt : </h5>
+              <p class="card-text">{{obj.prompt}}</p>
+              <p class="card-text">
+                <small class="text-muted">Date : {{obj.date}} </small>
+              </p>
+            </div>
+          </div>
+  
+          <!-- Side with Only Video -->
+          <div class="col-md-6">
+            {% if obj.id in v2v_videos  %}
+            <video class="img-fluid  rounded-end m-3" controls>
+              <source src="{{v2v_videos.get(obj.id)[1]}}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor  %}
+
+  {% else %}
+  <!-- if no generation is happened at -->
+  <div class="nonegenerated">
+    <div class="m-2">
+      <h3>Nothing genrated at: </h3>
+    </div>
+  </div>
+  {% endif  %}
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function text_to_image() {
+    console.log('text to image')
+    document.getElementsByClassName('title')[0].innerHTML = 'Text To Image &#x25BC;'
+  }
+
+  function image_to_image() {
+    console.log('image to image')
+    document.getElementsByClassName('title')[0].innerHTML = 'Image To Image &#x25BC;'
+  }
+
+  function video_to_video() {
+    console.log('video to video')
+    document.getElementsByClassName('title')[0].innerHTML = 'Video To Video &#x25BC;'
+  }
+
+
+  // Function to select the first image by default
+  function selectFirstImage() {
+    const firstThumbnail = document.querySelector('.thumbnail-img');
+    if (firstThumbnail) {
+      firstThumbnail.classList.add('selected-thumbnail');
+      document.getElementById("showImage").src = firstThumbnail.src;
+      document.getElementById("showImage").style.display = 'block';
+    }
+  }
+
+  // Add click listeners to thumbnails
+  function addThumbnailClickListeners() {
+    const thumbnails = document.querySelectorAll('.thumbnail-img');
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', () => {
+        document.querySelectorAll('.thumbnail-img').forEach(img => img.classList.remove('selected-thumbnail'));
+        // Add the selected class to the clicked thumbnail
+        thumbnail.classList.add('selected-thumbnail');
+        document.getElementById("showImage").src = thumbnail.src;
+      });
+    });
+  }
+
+  // Add click listeners to existing thumbnails
+  addThumbnailClickListeners();
+
+  // Select the first image by default
+  selectFirstImage();
+
+  document.getElementById('galleryDownloadBtn').addEventListener('click', function () {
+
+    const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+
+    let jsonCompatible = dataValue.replace(/'/g, '"');
+    let list = JSON.parse(jsonCompatible);
+
+    list.forEach((image, index) => {
+      const link = document.createElement('a');
+      link.download = `output_${index}.jpg`;
+      link.href = image;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  });
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}

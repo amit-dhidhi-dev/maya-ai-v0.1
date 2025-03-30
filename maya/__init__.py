@@ -45,3 +45,4 @@ from maya.dashboard import routes
 from maya.text_to_image import routes
 from maya.image_to_image import routes
 from maya.video_to_video import routes
+from maya.gallery import routes

@@ -1,47 +1,59 @@
-
 <div class="container">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary "  >
-      <div class="container-fluid  " >
-        <a class="navbar-brand" href="/"> <b>{{app_name}} </b> </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary ">
+    <div class="container-fluid  ">
+      <a class="navbar-brand" href="/"> <b>{{app_name}} </b> </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <li class="nav-item">
-              <a class="nav-link" href="" tabindex="-1" >   </a>
-            </li>
+        {% if current_user.is_authenticated and gallery %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-link">
+            <a class="nav-link title" id="galleryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+              aria-hidden="ture" style="cursor: pointer;"> Text To Image &#9660; </a>
+            <ul class="dropdown-menu dropdown-menu-down" aria-labelledby="galleryDropdown">
+              <li><a class="dropdown-item" onclick="text_to_image()">Text To Image</a></li>
+              <li><a class="dropdown-item" onclick="image_to_image()">Image To Image</a></li>
+              <li><a class="dropdown-item" onclick="video_to_video()">Video To Video</a></li>
+            </ul>
+          </li>
+        </ul>
+        {%  else  %}
+        <ul class="nav-link me-auto">
+          <a href=""></a>
+        </ul>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+
+        <li class="nav-link">
+          <i class="fa fa-user" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+            aria-hidden="ture"></i>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+            <li><a class="dropdown-item" href="#">{{current_user.name}} -
+                {%if current_user.payment %}
+                <strong>{{current_user.payment[0].current_coins}}</strong>
+                {%else %}
+                <strong>0</strong>
+                {% endif %}
+                coins</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('payment') }}">Get coins</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('gallery') }}">Gallery</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
           </ul>
-          <form class="d-flex" role="search">
-            {% if current_user.is_authenticated  %}
-            <li class="nav-link" >
-              <i class="fa fa-user" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-hidden="ture"></i>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                  <li><a class="dropdown-item" href="#">{{current_user.name}} - 
-                    {%if current_user.payment %} 
-                    <strong>{{current_user.payment[0].current_coins}}</strong> 
-                    {%else %}
-                    <strong>0</strong>
-                    {% endif %}
-                     coins</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('payment') }}">Get coins</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-              </ul>
-          </div>
-            {% else  %}
-            <li class="nav-link  ms-2 " >
-              <a href="{{ url_for('register') }}" class="btn btn-outline-info"  >Register </a>
-            </li>
-            <li class="nav-link ms-2 " >
-              <a href="{{ url_for('login') }}" class="btn btn-outline-info"  >Login </a>
-            </li>
-            {% endif  %}
-            
-          </form>
-        </div>
-      </div>
-    </nav>
-  </div>
+        </li>
 
+
+        {% else %}
+        <li class="nav-link  ms-2  ">
+          <a href="{{ url_for('register') }}" class="btn btn-outline-info">Register </a>
+        </li>
+        <li class="nav-link ms-2 ">
+          <a href="{{ url_for('login') }}" class="btn btn-outline-info">Login </a>
+        </li>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</div>

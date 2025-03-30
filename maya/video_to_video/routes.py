@@ -11,7 +11,7 @@ import random
 from flask_login import current_user
 from maya.payment.models import Payment
 from maya.video_to_video.models import VideoToVideo
-import threading
+import multiprocessing 
 
 global pipe
 pipe = None
@@ -29,6 +29,20 @@ def videoToVideo():
     global audio
     global frames_list
     global video_path
+    
+    directory_path='maya/static/audio'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+    
+    directory_path='maya/static/generated_videos'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+    
+    directory_path='maya/static/frames'
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+        
     if request.method == 'POST':
         
         
@@ -96,15 +110,13 @@ def videoToVideo():
                     print("Model not loaded")
                     pipe =  load_Model(model_path)
                     # return after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed)
-                    result={}
-                    thread = threading.Thread(target=after_model_loaded_in_thread, args=(result, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed))
-                    thread.start()
-                    thread.join()
-                    return render_template("video_to_video/video_to_video.html", no_animation=True,
-                           original_video=result['original_video'], generated_video=result['generated_video'],
-                               prompt=prompt,model_type=model_type,                                 
-                           title=config.get('APP_NAME','video to video'),
-                           app_name=config.get('APP_NAME','video to video')  )
+         
+                    process = multiprocessing.Process(target=after_model_loaded_in_thread, args=(current_user, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed))
+                    process.start()
+                    # right completion time here
+                    flash("Video generation started. You will be notified when it's complete.", "success")                    
+                    return redirect(url_for('home'))  
+                        
             else:
                  print("generate style first..")
                  if pipe:
@@ -229,7 +241,7 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
                            app_name=config.get('APP_NAME','video to video')  )
 
 # ////////////////////////////////////////// thread //////////////////////////////////////////////////
-def after_model_loaded_in_thread(result, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed):
+def after_model_loaded_in_thread(current_user, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed):
  try: 
     if seed is None:
         seed = random.randint(0,1000000000000)
@@ -245,33 +257,22 @@ def after_model_loaded_in_thread(result, pipe, frames_path, fps, duration, audio
             
     # generate video from generated frames
     output_video_path = generate_video(frames_path, fps, duration, audio,frames_list)
-    print(f"Generated video saved to {output_video_path}")
+   
     
-    
-    # save data in database
-    unit = VideoToVideo(user_id=current_user.id, input_video=video_path, generated_video=output_video_path)
+      # save data in database
+    unit = VideoToVideo(user_id=current_user.id,prompt=prompt, input_video=video_path, generated_video=output_video_path)
     db.session.add(unit)
     db.session.commit()
-    
-    directory_path='maya/static/generated_videos'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-    # get url of both videos
-    # video_path = url_for('static', filename='videos/' + os.path.basename(video_path))
-
-     # update coins in account
+                        
+      # update coins in account
     user_payment = Payment.query.filter_by(user_id=current_user.id).first()
     if user_payment:
             user_payment.current_coins = user_payment.current_coins - (3 * len(frames_path))
-            db.session.commit()
+            db.session.commit()  
             
-    video_path_url=url_for('static', filename='videos/' + os.path.basename(video_path))        
-    output_video_path= url_for('static', filename='generated_videos/' + os.path.basename(output_video_path))
-    
-    result['original_video'] = video_path_url
-    result['generated_video'] = output_video_path
+    print(f"Generated video saved to {output_video_path}")                 
     print('video generation completed ......................................')
-    print(result['original_video'], result['generated_video'])
+   
  except Exception as e:
         print(e)   
         print('failed to generate video ......................................')
@@ -289,10 +290,7 @@ def get_video_info(video_path):
     frame_count = 0
     
     #  make frames directory if not available
-    directory_path='maya/static/frames'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-
+   
     # Read and save frames with error handling
     while True:
         ret, frame = cap.read()
@@ -311,10 +309,7 @@ def get_video_info(video_path):
     cap.release()
 
      #  make frames directory if not available
-    directory_path='maya/static/audio'
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-    
+ 
     # Extract audio using try-except block
     try:
         video = VideoFileClip(video_path)
