@@ -34,12 +34,31 @@
 
 {% include 'navbar.html' %}
 
-<div class="container">
+<div class="container">    
+ {% if text_to_images or image_to_image or video_to_video %}
+ <div id="content">
+
+ </div>
+ {% else %}
+  <!-- if no generation is happened at -->
+  <div class="nonegenerated">
+    <div class="m-2">
+      <h3>Nothing genrated at: </h3>
+    </div>
+  </div>
+  {% endif  %}
+
+</div>
 
 
-  {% if text_to_image %}
+<script>
+  function text_to_image() {
+    console.log('text to image')
+    document.getElementsByClassName('title')[0].innerHTML = 'Text To Image &#x25BC;'
+    document.getElementById('content').innerHTML=`
+     {% if text_to_images %}
   <!-- for showing text to image generation -->
-    {% for obj in text_to_image  %} 
+    {% for obj in text_to_images  %} 
   <div id="texttoimage">
     <div class="container mt-4">
       <div class="card shadow">
@@ -87,8 +106,26 @@
   </div>
 
     {% endfor  %}
+    {% else %}
+  <!-- if no generation is happened at -->
+  <div class="nonegenerated">
+    <div class="m-2">
+      <h3>Nothing genrated at: </h3>
+    </div>
+  </div>
+  {% endif  %}
+  
+    `;
+    
+  }
 
- {% elif image_to_image  %}
+  text_to_image();
+
+  function image_to_image() {
+    console.log('image to image')
+    document.getElementsByClassName('title')[0].innerHTML = 'Image To Image &#x25BC;'
+     document.getElementById('content').innerHTML=`
+     {% if image_to_image  %}
   <!-- for showing image to image generation -->
   {% for obj in image_to_image  %} 
   <div id="imagetoimage">
@@ -134,8 +171,22 @@
     </div>
   </div>
   {% endfor  %}
+  {% else %}
+  <!-- if no generation is happened at -->
+  <div class="nonegenerated">
+    <div class="m-2">
+      <h3>Nothing genrated at: </h3>
+    </div>
+  </div>
+  {% endif  %}
+     `;
+  }
 
-  {% elif video_to_video  %}
+  function video_to_video() {
+    console.log('video to video')
+    document.getElementsByClassName('title')[0].innerHTML = 'Video To Video &#x25BC;'
+    document.getElementById('content').innerHTML=`
+{%if video_to_video  %}
   <!-- for showing video to video generation  -->
   {% for obj in video_to_video  %} 
   <div id="videotovideo">
@@ -173,7 +224,6 @@
     </div>
   </div>
   {% endfor  %}
-
   {% else %}
   <!-- if no generation is happened at -->
   <div class="nonegenerated">
@@ -182,36 +232,7 @@
     </div>
   </div>
   {% endif  %}
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-  function text_to_image() {
-    console.log('text to image')
-    document.getElementsByClassName('title')[0].innerHTML = 'Text To Image &#x25BC;'
-  }
-
-  function image_to_image() {
-    console.log('image to image')
-    document.getElementsByClassName('title')[0].innerHTML = 'Image To Image &#x25BC;'
-  }
-
-  function video_to_video() {
-    console.log('video to video')
-    document.getElementsByClassName('title')[0].innerHTML = 'Video To Video &#x25BC;'
+    `;
   }
 
 
@@ -247,7 +268,8 @@
   document.getElementById('galleryDownloadBtn').addEventListener('click', function () {
 
     const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
-
+    
+    console.log('gallery download button click')
 
     let jsonCompatible = dataValue.replace(/'/g, '"');
     let list = JSON.parse(jsonCompatible);

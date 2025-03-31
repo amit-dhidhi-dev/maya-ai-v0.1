@@ -55,7 +55,7 @@
         <div class="col-md-6">
             <div class="form-container">
                 <h2 class="mb-4">Image to Image </h2>
-                <form id="" action="/imagetoimage" method="POST" enctype="multipart/form-data">
+                <form id="imageGenerateForm" action="/imagetoimage" method="POST" enctype="multipart/form-data">
 
                     <!-- Image Size Selection -->
 
@@ -118,10 +118,10 @@
 
                     <!-- Submit Button -->
                     {% if image_url %}
-                    <button type="submit" id="generateBtnImageToImage" class="btn btn-primary">Generate
+                    <button  id="generateBtnImageToImage" class="btn btn-primary">Generate
                         Images</button>
                     {% else %}
-                    <button type="submit" id="generateBtnImageToImage" class="btn btn-primary" disabled>Generate
+                    <button  id="generateBtnImageToImage" class="btn btn-primary" disabled>Generate
                         Images</button>
                     {% endif %}
                 </form>

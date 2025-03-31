@@ -122,7 +122,11 @@ document.getElementById('generateBtnImageToImage').addEventListener('click', fun
 
     document.querySelector('.image-placeholder').querySelector('.spinner-border').style.display = 'block';
 
+    document.getElementById('imageGenerateForm').submit();
+    // event.preventDefault(); // Prevent the default form submission
+  
     document.getElementById('generateBtnImageToImage').disabled = true;
+    document.getElementById('generateBtnImageToImage').textContent = "Generating...";
 
 });
 

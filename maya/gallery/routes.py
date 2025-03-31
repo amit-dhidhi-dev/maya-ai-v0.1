@@ -34,21 +34,21 @@ def gallery():
     # get all the images in text to image generation
     if text_to_images:
        for t2i in text_to_images:
-         t2i_url.clear()
          for image in t2i.generated_image:
            url = url_for('static',filename='photos/'+os.path.basename(image))
            t2i_url.append(url)
-         t2i_images[t2i.id]=t2i_url
+         t2i_images[t2i.id]=t2i_url.copy()
+         t2i_url.clear()
     
     # get all the image in image to image generation  
     if image_to_image:
        for i2i in image_to_image:
-         i2i_url.clear()
          input_url = url_for('static',filename='photos/'+os.path.basename(i2i.input_image))
          for image in i2i.generated_image:
             url = url_for('static',filename='photos/'+os.path.basename(image))
             i2i_url.append(url)
-         i2i_images[i2i.id]=[input_url, i2i_url]
+         i2i_images[i2i.id]=[input_url, i2i_url.copy()]
+         i2i_url.clear()
       
     #  get all the video in video to video generation
     if video_to_video:

@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, url_for, redirect, flash
+from flask import render_template, request, jsonify, url_for, redirect, flash, current_app
 
 from maya import app, config, basedir, db
 from maya.models.img2img_model import load_Model, generate_image
@@ -11,7 +11,7 @@ import random
 from flask_login import current_user
 from maya.payment.models import Payment
 from maya.video_to_video.models import VideoToVideo
-import multiprocessing 
+import threading 
 
 global pipe
 pipe = None
@@ -111,11 +111,13 @@ def videoToVideo():
                     pipe =  load_Model(model_path)
                     # return after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed)
          
-                    process = multiprocessing.Process(target=after_model_loaded_in_thread, args=(current_user, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed))
-                    process.start()
-                    # right completion time here
-                    flash("Video generation started. You will be notified when it's complete.", "success")                    
-                    return redirect(url_for('home'))  
+                process = threading.Thread(target=after_model_loaded_in_thread, 
+                                                      args=(current_user.id, current_app.app_context(), pipe, frames_path, fps, duration, 
+                                                            audio, prompt, model_type, video_path, seed))
+                process.start()
+                # right completion time here
+                flash("Video generation started. You will be notified when it's complete.", "success")                    
+                return redirect(url_for('home'))  
                         
             else:
                  print("generate style first..")
@@ -127,12 +129,6 @@ def videoToVideo():
                     pipe =  load_Model(model_path)
                     return after_model_loaded_for_style(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path)
     
-    
-                            
-                            #   original_video='static/videos/short_video.mp4',
-                            # # image_url=['static/photos/sd.png','static/photos/1_4.png'],  
-                            #  generated_video='static/videos/short_video.mp4',
-                            #    prompt='prompt',model_type='option2',     
         else:
             print('video not found')                   
     
@@ -241,37 +237,38 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
                            app_name=config.get('APP_NAME','video to video')  )
 
 # ////////////////////////////////////////// thread //////////////////////////////////////////////////
-def after_model_loaded_in_thread(current_user, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed):
+def after_model_loaded_in_thread(user_id, context, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed):
  try: 
-    if seed is None:
-        seed = random.randint(0,1000000000000)
+    with context:
+        if seed is None:
+            seed = random.randint(0,1000000000000)
     
-    frames = [generate_image(pipe=pipe, control_image=frame, 
+        frames = [generate_image(pipe=pipe, control_image=frame, 
                              prompt=prompt,num_inference_steps=20, 
                              seed=seed) for frame in frames_path ] 
     
     
     # save all the generated frame to it's corresponding orginal frame path
-    for frame, frame_path in zip(frames, frames_path):    
-        frame[0].save(frame_path)
+        for frame, frame_path in zip(frames, frames_path):    
+            frame[0].save(frame_path)
             
     # generate video from generated frames
-    output_video_path = generate_video(frames_path, fps, duration, audio,frames_list)
+        output_video_path = generate_video(frames_path, fps, duration, audio,frames_list)
    
     
       # save data in database
-    unit = VideoToVideo(user_id=current_user.id,prompt=prompt, input_video=video_path, generated_video=output_video_path)
-    db.session.add(unit)
-    db.session.commit()
+        unit = VideoToVideo(user_id=user_id,prompt=prompt, input_video=video_path, generated_video=output_video_path)
+        db.session.add(unit)
+        db.session.commit()
                         
       # update coins in account
-    user_payment = Payment.query.filter_by(user_id=current_user.id).first()
-    if user_payment:
-            user_payment.current_coins = user_payment.current_coins - (3 * len(frames_path))
-            db.session.commit()  
+        user_payment = Payment.query.filter_by(user_id=user_id).first()
+        if user_payment:
+                user_payment.current_coins = user_payment.current_coins - (3 * len(frames_path))
+                db.session.commit()  
             
-    print(f"Generated video saved to {output_video_path}")                 
-    print('video generation completed ......................................')
+        print(f"Generated video saved to {output_video_path}")                 
+        print('video generation completed ......................................')
    
  except Exception as e:
         print(e)   
