@@ -56,7 +56,20 @@ def gallery():
          original_video = url_for('static',filename='videos/'+os.path.basename(v2v.input_video))
          generated_video = url_for('static',filename='generated_videos/'+os.path.basename(v2v.generated_video))
          v2v_videos[v2v.id]=[original_video,generated_video]
-      
+    
+    class text:
+      def __init__(self,id ,  prompt, date):
+        self.id = id
+        self.prompt = prompt
+        self.date = date  
+      def to_dict(self):
+        return {"id": self.id, "prompt": self.prompt, "date": self.date}  
+    text_to_images=[text(1,'this is prompt 1', '31.03.2025').to_dict(), text(2, 'this is prompt 2', '31.03.2025').to_dict()]  
+    t2i_images={
+      1:['/static/photos/1.jpg', '/static/photos/2.jpg'],
+      2:['/static/photos/sd.jpg', '/static/photos/sd.png']
+                }
+    print(f"text_to_images : {text_to_images}")  
     # Render the gallery template with the retrieved data
     return render_template('gallery/gallery.html',
                               gallery='gallery',

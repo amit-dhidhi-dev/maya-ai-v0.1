@@ -7,6 +7,7 @@ import secrets
 from flask_login import current_user
 from maya.payment.models import Payment
 from maya.text_to_image.models import TextToImage
+import time
 
 global pipe
 pipe = None
@@ -82,6 +83,7 @@ def textToImage():
 def after_text_model_loaded(pipe,  prompt, numberOfImages, width, height, imageRatio, model_type):
     
     try:
+        start_time = time.time()
         output_path = os.path.join(basedir, 'static', 'photos', secrets.token_hex(10))
         output_path=output_path+'.png'
         
@@ -106,6 +108,10 @@ def after_text_model_loaded(pipe,  prompt, numberOfImages, width, height, imageR
         for image_path in image_paths:
             url = url_for('static', filename='photos/' + os.path.basename(image_path))
             image_url.append(url)
+        
+        end_time = time.time()
+        time_taken = end_time - start_time
+        print(f"time taken by t2i generation : {time_taken} seconds")
         
         # add to database
         unit = TextToImage(user_id=current_user.id, prompt=prompt, generated_image=image_paths)

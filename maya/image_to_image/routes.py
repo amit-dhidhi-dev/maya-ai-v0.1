@@ -9,7 +9,7 @@ from flask_login import current_user
 from maya.payment.models import Payment
 from maya.image_to_image.models import ImageToImage
 from PIL import Image
-
+import time
 
 global pipe
 pipe = None
@@ -68,6 +68,7 @@ def after_model_loaded(pipe, image, prompt, model_type):
     try:
             # save input image to database
             # input_image_path = f"{os.path.join(basedir, 'static', 'photos')}\{secrets.token_hex(10)}.png"
+            start_time = time.time()
             input_image_path = os.path.join(basedir, 'static', 'photos', f"{secrets.token_hex(10)}.png")
             input_image=Image.open(io.BytesIO(image.read()))
             input_image.save(input_image_path)
@@ -89,6 +90,9 @@ def after_model_loaded(pipe, image, prompt, model_type):
         
             print(image_url)
             
+            end_time = time.time()
+            time_taken = end_time - start_time
+            print(f"time taken by i2i generation :  {time_taken} seconds")
             # save data in database           
             
             unit = ImageToImage(user_id=current_user.id, prompt=prompt, input_image=input_image_path, generated_image=image_paths)

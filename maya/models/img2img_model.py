@@ -139,9 +139,14 @@ def generate_image(
     
     control_img, width, height = load_image(control_image)
     w, h = Image.open(control_image).size
-    if w>512 or h>512 :
+    if w>512 or h>512:
       width=w
       height=h
+    
+    # if image is too large
+    if width>2048 or height>2048:
+        print('image is too large')
+        width, height = resize_image_proportionally(width, height, target_size=2048)  
 
     # width and hight shoud be divisiable by 8
     width= 8 * (width // 8)

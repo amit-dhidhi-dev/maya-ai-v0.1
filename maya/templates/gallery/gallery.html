@@ -34,28 +34,30 @@
 
 {% include 'navbar.html' %}
 
-<div class="container">    
- {% if text_to_images or image_to_image or video_to_video %}
- <div id="content">
+<div class="container">
+  {% if text_to_images or image_to_image or video_to_video %}
+  <div id="content">
 
- </div>
- {% else %}
+  </div>
+  {% else %}
   <!-- if no generation is happened at -->
   <div class="nonegenerated">
     <div class="m-2">
       <h3>Nothing genrated at: </h3>
     </div>
   </div>
-  {% endif  %}
+  {% endif %}
 
 </div>
 
 
 <script>
+
+
   function text_to_image() {
-    console.log('text to image')
+
     document.getElementsByClassName('title')[0].innerHTML = 'Text To Image &#x25BC;'
-    document.getElementById('content').innerHTML=`
+    document.getElementById('content').innerHTML = `
      {% if text_to_images %}
   <!-- for showing text to image generation -->
     {% for obj in text_to_images  %} 
@@ -77,10 +79,10 @@
           </div>
 
           <!-- Image Side -->
-          <div class="col-md-6">
+          <div class="col-md-6 text-center ">
             {% if t2i_images %}
             {% if obj.id in t2i_images %}
-            <img id="showImage" src="{{ t2i_images.get(obj.id)[0]  }}" class="img-fluid rounded-end m-3" alt="Card Image">
+            <img id="showImage{{obj.id}}" src="{{ t2i_images.get(obj.id)[0]  }}" class="img-fluid rounded-end p-3" alt="Card Image">
              {% endif %}
             {% endif %} 
             <!-- Container for the list of images -->
@@ -90,10 +92,10 @@
               {% if obj.id in t2i_images %}
               {% for url in t2i_images.get(obj.id) %}
               <div class="thumbnail-container">
-                <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
+                <img src="{{url}}" class="thumbnail-img thumbnail-img{{obj.id}}" alt="Generated Image">
               </div>
               {% endfor %}
-              <button id="galleryDownloadBtn" class="btn btn-primary mt-3" data-value="{{t2i_images.get(obj.id)}}">Download
+              <button id="galleryDownloadBtn{{obj.id}}" class="btn btn-primary mb-2 mt-2" data-value="{{t2i_images.get(obj.id)}}">Download
                 All</button>
               {% endif %}
               {% endif %}
@@ -116,7 +118,58 @@
   {% endif  %}
   
     `;
-    
+
+    var images = JSON.parse('{{ text_to_images | tojson }}');
+    console.log(images)
+    for (const image of images) {
+      console.log(image.id);
+      console.log(image.prompt);
+      console.log(image.date);
+
+      const firstThumbnail = document.querySelector(`.thumbnail-img${image.id}`);
+      if (firstThumbnail) {
+        firstThumbnail.classList.add('selected-thumbnail');
+        document.getElementById(`showImage${image.id}`).src = firstThumbnail.src;
+        document.getElementById(`showImage${image.id}`).style.display = 'block';
+      }
+
+      const thumbnails = document.querySelectorAll(`.thumbnail-img${image.id}`);
+      thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', () => {
+          document.querySelectorAll(`.thumbnail-img${image.id}`).forEach(img => img.classList.remove('selected-thumbnail'));
+          // Add the selected class to the clicked thumbnail
+          thumbnail.classList.add('selected-thumbnail');
+          document.getElementById(`showImage${image.id}`).src = thumbnail.src;
+        });
+      });
+
+      var downloadbtn = document.getElementById(`galleryDownloadBtn${image.id}`)
+      if (downloadbtn) {
+
+        downloadbtn.addEventListener('click', function () {
+
+          const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+          console.log('gallery download button click')
+
+          let jsonCompatible = dataValue.replace(/'/g, '"');
+          let list = JSON.parse(jsonCompatible);
+
+          list.forEach((image, index) => {
+            const link = document.createElement('a');
+            link.download = `output_${index}.jpg`;
+            link.href = image;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          });
+        });
+
+      }
+
+    }
+
+
   }
 
   text_to_image();
@@ -124,7 +177,7 @@
   function image_to_image() {
     console.log('image to image')
     document.getElementsByClassName('title')[0].innerHTML = 'Image To Image &#x25BC;'
-     document.getElementById('content').innerHTML=`
+    document.getElementById('content').innerHTML = `
      {% if image_to_image  %}
   <!-- for showing image to image generation -->
   {% for obj in image_to_image  %} 
@@ -150,7 +203,7 @@
            <!-- Image Side -->
            <div class="col-md-6">
             {% if obj.id in i2i_images %}
-            <img id="showImage" src="{{i2i_images.get(obj.id)[1][0]}}" class="img-fluid rounded-end m-3" alt="Card Image">
+            <img id="showImage{{obj.id}}" src="{{i2i_images.get(obj.id)[1][0]}}" class="img-fluid rounded-end m-3" alt="Card Image">
             {% endif  %}
             <!-- Container for the list of images -->
             <div id="imageList" class="d-flex flex-wrap mt-3">
@@ -158,10 +211,10 @@
               {% if obj.id in i2i_images %}
               {% for url in i2i_images.get(obj.id)[1] %}
               <div class="thumbnail-container">
-                <img src="{{url}}" class="thumbnail-img" alt="Generated Image">
+                <img src="{{url}}" class="thumbnail-img thumbnail-img{{obj.id}}" alt="Generated Image">
               </div>
               {% endfor %}
-              <button id="galleryDownloadBtn" class="btn btn-primary mt-3" data-value="{{i2i_images.get(obj.id)[1]}}">Download
+              <button id="galleryDownloadBtn{{obj.id}}" class="btn btn-primary mt-3" data-value="{{i2i_images.get(obj.id)[1]}}">Download
                 All</button>
               {% endif %}
             </div>
@@ -180,12 +233,64 @@
   </div>
   {% endif  %}
      `;
+
+
+    var images = JSON.parse('{{ image_to_image | tojson }}');
+    console.log(images)
+    for (const image of images) {
+      console.log(image.id);
+      console.log(image.prompt);
+      console.log(image.date);
+
+      const firstThumbnail = document.querySelector(`.thumbnail-img${image.id}`);
+      if (firstThumbnail) {
+        firstThumbnail.classList.add('selected-thumbnail');
+        document.getElementById(`showImage${image.id}`).src = firstThumbnail.src;
+        document.getElementById(`showImage${image.id}`).style.display = 'block';
+      }
+
+      const thumbnails = document.querySelectorAll(`.thumbnail-img${image.id}`);
+      thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', () => {
+          document.querySelectorAll(`.thumbnail-img${image.id}`).forEach(img => img.classList.remove('selected-thumbnail'));
+          // Add the selected class to the clicked thumbnail
+          thumbnail.classList.add('selected-thumbnail');
+          document.getElementById(`showImage${image.id}`).src = thumbnail.src;
+        });
+      });
+
+      var downloadbtn = document.getElementById(`galleryDownloadBtn${image.id}`)
+      if (downloadbtn) {
+
+        downloadbtn.addEventListener('click', function () {
+
+          const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
+
+          console.log('gallery download button click')
+
+          let jsonCompatible = dataValue.replace(/'/g, '"');
+          let list = JSON.parse(jsonCompatible);
+
+          list.forEach((image, index) => {
+            const link = document.createElement('a');
+            link.download = `output_${index}.jpg`;
+            link.href = image;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          });
+        });
+
+      }
+
+    }
+
   }
 
   function video_to_video() {
     console.log('video to video')
     document.getElementsByClassName('title')[0].innerHTML = 'Video To Video &#x25BC;'
-    document.getElementById('content').innerHTML=`
+    document.getElementById('content').innerHTML = `
 {%if video_to_video  %}
   <!-- for showing video to video generation  -->
   {% for obj in video_to_video  %} 
@@ -218,6 +323,8 @@
               Your browser does not support the video tag.
             </video>
             {% endif %}
+            <button id="videoDownloadBtn{{obj.id}}" class="btn btn-primary mb-3" data-value="{{v2v_videos.get(obj.id)[1]}}">Download
+                All</button>
           </div>
         </div>
       </div>
@@ -236,59 +343,22 @@
   }
 
 
-  // Function to select the first image by default
-  function selectFirstImage() {
-    const firstThumbnail = document.querySelector('.thumbnail-img');
-    if (firstThumbnail) {
-      firstThumbnail.classList.add('selected-thumbnail');
-      document.getElementById("showImage").src = firstThumbnail.src;
-      document.getElementById("showImage").style.display = 'block';
-    }
-  }
 
-  // Add click listeners to thumbnails
-  function addThumbnailClickListeners() {
-    const thumbnails = document.querySelectorAll('.thumbnail-img');
-    thumbnails.forEach(thumbnail => {
-      thumbnail.addEventListener('click', () => {
-        document.querySelectorAll('.thumbnail-img').forEach(img => img.classList.remove('selected-thumbnail'));
-        // Add the selected class to the clicked thumbnail
-        thumbnail.classList.add('selected-thumbnail');
-        document.getElementById("showImage").src = thumbnail.src;
-      });
+  var videos = JSON.parse('{{ video_to_video | tojson }}');
+  console.log(videos)
+  for (const video of videos) {
+    document.getElementById(`videoDownloadBtn${video.id}`).addEventListener('click', function () {
+
+      let videoUrl = this.getAttribute("data-value");
+      let anchor = document.createElement('a');
+      anchor.href = videoUrl; // Set the video file URL
+      anchor.download = videoUrl.substring(videoUrl.lastIndexOf('/') + 1); // Set the desired file name for the download
+      document.body.appendChild(anchor); // Add the anchor to the document
+      anchor.click(); // Programmatically click the anchor to start download
+      document.body.removeChild(anchor);
+
     });
   }
-
-  // Add click listeners to existing thumbnails
-  addThumbnailClickListeners();
-
-  // Select the first image by default
-  selectFirstImage();
-
-  document.getElementById('galleryDownloadBtn').addEventListener('click', function () {
-
-    const dataValue = this.getAttribute("data-value"); // Or use: this.dataset.value
-    
-    console.log('gallery download button click')
-
-    let jsonCompatible = dataValue.replace(/'/g, '"');
-    let list = JSON.parse(jsonCompatible);
-
-    list.forEach((image, index) => {
-      const link = document.createElement('a');
-      link.download = `output_${index}.jpg`;
-      link.href = image;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-  });
-
-
-
-
-
-
 
 </script>
 

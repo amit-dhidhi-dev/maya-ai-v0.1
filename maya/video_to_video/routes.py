@@ -240,6 +240,7 @@ def after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_ty
 def after_model_loaded_in_thread(user_id, context, pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed):
  try: 
     with context:
+        start_time = time.time()
         if seed is None:
             seed = random.randint(0,1000000000000)
     
@@ -255,7 +256,9 @@ def after_model_loaded_in_thread(user_id, context, pipe, frames_path, fps, durat
     # generate video from generated frames
         output_video_path = generate_video(frames_path, fps, duration, audio,frames_list)
    
-    
+        end_time = time.time()
+        time_taken = end_time - start_time
+        print(f"time taken by video generation: {time_taken} seconds")
       # save data in database
         unit = VideoToVideo(user_id=user_id,prompt=prompt, input_video=video_path, generated_video=output_video_path)
         db.session.add(unit)
