@@ -21,13 +21,13 @@ def gallery():
 
     # Query the database for generated images and videos
     text_to_images = TextToImage.query.filter_by(user_id=user_id).all()
-    text_to_images = [t2i.to_dict() for t2i in text_to_images] 
+    text_to_images_dict = [t2i.to_dict() for t2i in text_to_images] 
     
     image_to_image = ImageToImage.query.filter_by(user_id=user_id).all()
-    image_to_image = [i2i.to_dict() for i2i in image_to_image] 
+    image_to_image_dict = [i2i.to_dict() for i2i in image_to_image] 
     
     video_to_video = VideoToVideo.query.filter_by(user_id=user_id).all()
-    video_to_video = [v2v.to_dict() for v2v in video_to_video] 
+    video_to_video_dict = [v2v.to_dict() for v2v in video_to_video] 
 
     t2i_url = []
     t2i_images = {}
@@ -66,8 +66,8 @@ def gallery():
     # Render the gallery template with the retrieved data
     return render_template('gallery/gallery.html',
                               gallery='gallery',
-                               text_to_images=text_to_images, image_to_image=image_to_image, 
-                               video_to_video=video_to_video, t2i_images=t2i_images,i2i_images=i2i_images,
+                               text_to_images=text_to_images_dict, image_to_image=image_to_image_dict, 
+                               video_to_video=video_to_video_dict, t2i_images=t2i_images,i2i_images=i2i_images,
                                v2v_videos=v2v_videos, 
                                title=config.get('APP_NAME','video to video'),
                                 app_name=config.get('APP_NAME','video to video')  

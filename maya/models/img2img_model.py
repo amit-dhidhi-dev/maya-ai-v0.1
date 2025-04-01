@@ -122,19 +122,10 @@ def generate_image(
         torch.manual_seed(seed)
         print(seed)
         num_images_per_prompt = 1
+        strength=0.5 
+        #A low strength (close to 0) means the output will closely resemble the input image, preserving its features.
     else:   
         num_images_per_prompt = 4
-
-    # Generate image
-    # output = pipe(
-    #     prompt=prompt,
-    #     negative_prompt=negative_prompt,
-    #     image=control_image,
-    #     num_inference_steps=num_inference_steps,
-    #     guidance_scale=guidance_scale,
-    #     controlnet_conditioning_scale=controlnet_conditioning_scale,
-    #     strength=strength,
-    # ).images[0]
     
     
     control_img, width, height = load_image(control_image)
@@ -144,9 +135,9 @@ def generate_image(
       height=h
     
     # if image is too large
-    if width>2048 or height>2048:
+    if width>1024 or height>1024:
         print('image is too large')
-        width, height = resize_image_proportionally(width, height, target_size=2048)  
+        width, height = resize_image_proportionally(width, height, target_size=1024)  
 
     # width and hight shoud be divisiable by 8
     width= 8 * (width // 8)
