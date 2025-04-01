@@ -11,6 +11,10 @@ class ImageToImage(db.Model):
     generated_image= db.Column(JSON)
     date=db.Column(db.DateTime, unique=False, default=datetime.utcnow )
     
+    def to_dict(self):
+        return {"id": self.id, "user_id": self.user_id, "prompt": self.prompt,
+                "input_image":self.input_image, "generated_image":self.generated_image, 
+                "date":self.date}
 
 
 with app.app_context():

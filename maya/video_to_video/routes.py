@@ -105,7 +105,7 @@ def videoToVideo():
                     seedAndFrameDict.clear()  
                 if pipe:
                     print("Model loaded successfully")
-                    return after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed)
+                    # return after_model_loaded(pipe, frames_path, fps, duration, audio, prompt, model_type, video_path, seed)
                 else:
                     print("Model not loaded")
                     pipe =  load_Model(model_path)

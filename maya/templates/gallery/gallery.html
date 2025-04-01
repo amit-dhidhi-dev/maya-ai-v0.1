@@ -120,12 +120,8 @@
     `;
 
     var images = JSON.parse('{{ text_to_images | tojson }}');
-    console.log(images)
-    for (const image of images) {
-      console.log(image.id);
-      console.log(image.prompt);
-      console.log(image.date);
 
+    for (const image of images) {
       const firstThumbnail = document.querySelector(`.thumbnail-img${image.id}`);
       if (firstThumbnail) {
         firstThumbnail.classList.add('selected-thumbnail');
@@ -236,11 +232,8 @@
 
 
     var images = JSON.parse('{{ image_to_image | tojson }}');
-    console.log(images)
+
     for (const image of images) {
-      console.log(image.id);
-      console.log(image.prompt);
-      console.log(image.date);
 
       const firstThumbnail = document.querySelector(`.thumbnail-img${image.id}`);
       if (firstThumbnail) {
@@ -323,8 +316,8 @@
               Your browser does not support the video tag.
             </video>
             {% endif %}
-            <button id="videoDownloadBtn{{obj.id}}" class="btn btn-primary mb-3" data-value="{{v2v_videos.get(obj.id)[1]}}">Download
-                All</button>
+            <button id="videoDownloadBtn{{obj.id}}" class="btn btn-primary m-3" data-value="{{v2v_videos.get(obj.id)[1]}}">Download
+                video</button>
           </div>
         </div>
       </div>
@@ -340,25 +333,27 @@
   </div>
   {% endif  %}
     `;
+
+    var videos = JSON.parse('{{ video_to_video | tojson }}');
+    console.log(videos)
+    for (const video of videos) {
+      document.getElementById(`videoDownloadBtn${video.id}`).addEventListener('click', function () {
+
+        let videoUrl = this.getAttribute("data-value");
+        let anchor = document.createElement('a');
+        anchor.href = videoUrl; // Set the video file URL
+        anchor.download = videoUrl.substring(videoUrl.lastIndexOf('/') + 1); // Set the desired file name for the download
+        document.body.appendChild(anchor); // Add the anchor to the document
+        anchor.click(); // Programmatically click the anchor to start download
+        document.body.removeChild(anchor);
+
+      });
+    }
   }
 
 
 
-  var videos = JSON.parse('{{ video_to_video | tojson }}');
-  console.log(videos)
-  for (const video of videos) {
-    document.getElementById(`videoDownloadBtn${video.id}`).addEventListener('click', function () {
 
-      let videoUrl = this.getAttribute("data-value");
-      let anchor = document.createElement('a');
-      anchor.href = videoUrl; // Set the video file URL
-      anchor.download = videoUrl.substring(videoUrl.lastIndexOf('/') + 1); // Set the desired file name for the download
-      document.body.appendChild(anchor); // Add the anchor to the document
-      anchor.click(); // Programmatically click the anchor to start download
-      document.body.removeChild(anchor);
-
-    });
-  }
 
 </script>
 
